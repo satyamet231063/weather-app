@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Satyam's Advanced Weather App 🌤️</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .overlay {
+      background: rgba(0, 0, 0, 0.5);
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .weather-card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 350px;
+      max-width: 90%;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      color: #0077b6;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 12px;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #023e8a;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #0077b6;
+    }
+    .weather-info {
+      margin-top: 20px;
+      color: #023047;
+    }
+    .weather-info img {
+      width: 80px;
+    }
+    .date-time {
+      font-size: 14px;
+      color: #333;
+      margin-top: 10px;
+    }
+    .footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="weather-card">
+    <h1>🌤️ Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter City Name">
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherResult" class="weather-info"></div>
+    <div class="date-time" id="dateTime"></div>
+    <div class="footer">Made by Satyam Dubey • OpenWeatherMap API</div>
+  </div>
+  <script>
+    async function getWeather() {
+      const city = document.getElementById('cityInput').value.trim();
+      const apiKey = "1aa21be1b55dd75a1645b43a4fb52aed";
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.cod !== 200) throw new Error(data.message);
+        const temp = data.main.temp;
+        const desc = data.weather[0].description;
+        const icon = data.weather[0].icon;
+        const iconUrl = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+        const now = new Date();
+        const time = now.toLocaleTimeString();
+        const date = now.toLocaleDateString();
+        document.getElementById("weatherResult").innerHTML = `
+          <h2>${data.name}</h2>
+          <img src="${iconUrl}" alt="${desc}">
+          <p>${desc.toUpperCase()}</p>
+          <p><strong>${temp}°C</strong></p>
+        `;
+        document.getElementById("dateTime").textContent = `📅 ${date} | 🕒 ${time}`;
+      } catch (error) {
+        document.getElementById("weatherResult").innerHTML = `<p style="color: red;">❌ ${error.message}</p>`;
+        document.getElementById("dateTime").textContent = "";
+      }
+    }
+  </script>
+</body>
+</html>
